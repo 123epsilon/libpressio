@@ -1,0 +1,8 @@
+<map id="include/libpressio_ext/cpp/metrics.h" name="include/libpressio_ext/cpp/metrics.h">
+<area shape="rect" id="node1" title="an extension header for adding metrics plugins to libpressio" alt="" coords="126,5,257,47"/>
+<area shape="rect" id="node2" href="$compressor_8h.html" title="an extension header for adding compressor plugins to libpressio" alt="" coords="114,95,269,136"/>
+<area shape="rect" id="node3" href="$libpressio__ext_2cpp_2libpressio_8h.html" title="convenience header for the c++ interface" alt="" coords="5,281,148,322"/>
+<area shape="rect" id="node4" href="$libpressio__ext_2cpp_2pressio_8h.html" title="C++ interface to the compressor loader." alt="" coords="229,184,359,225"/>
+<area shape="rect" id="node5" href="$subgroup__manager_8h_source.html" title=" " alt="" coords="336,281,532,322"/>
+<area shape="rect" id="node6" href="$external__launch_8h.html" title="interface for external launch methods" alt="" coords="173,273,311,329"/>
+</map>
