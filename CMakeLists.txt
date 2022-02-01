@@ -143,6 +143,8 @@ libpressio_optional_component(select "build the io selection plugin" /io/select.
 libpressio_optional_component(switch "build the switch comprssor plugin" /compressors/switch.cc)
 libpressio_optional_component(transpose "build the transpose compressor plugin" /compressors/transpose.cc)
 libpressio_optional_component(print_options "print the options passed to set_options" /metrics/print_options.cc)
+set(roibin_sources /compressors/roibin.cc /compressors/binning.cc)
+libpressio_optional_component(roibin "build the roibin metacompressor" "${roibin_sources}")
 
 option(LIBPRESSIO_INTERPROCEDURAL_OPTIMIZATION "Use interprocedural optimization (LTO)" OFF)
 if(LIBPRESSIO_INTERPROCEDURAL_OPTIMIZATION)
