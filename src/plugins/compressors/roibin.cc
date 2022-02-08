@@ -104,7 +104,8 @@ public:
     pressio_data backround_compressed = pressio_data::nonowning(pressio_byte_dtype, 
         static_cast<uint8_t*>(input->data()) + sizes[0] + 2*sizeof(size_t),
         {sizes[1]}); 
-    pressio_data roi_decompressed = pressio_data::owning(output->dtype(), roi_dims(output->get_dimension(3)));
+    size_t regions = std::min(peak_rows.get_dimension(0), std::min(peak_cols.get_dimension(0), peak_segs.get_dimension(0)));
+    pressio_data roi_decompressed = pressio_data::owning(output->dtype(), roi_dims(output->get_dimension(3) * regions));
     
     int ec = roi->decompress(&roi_compressed, &roi_decompressed);
     if(ec < 0) {
@@ -158,6 +159,8 @@ public:
         throw std::runtime_error("unsupported roi_size");
     }
     switch(data.dtype()) {
+      case pressio_bool_dtype:
+        return save_roi_typed<bool>(data);
       case pressio_int8_dtype:
         return save_roi_typed<int8_t>(data);
       case pressio_int16_dtype:
@@ -187,17 +190,17 @@ public:
   std::vector<std::array<size_t, 4>> centers(size_t events) const {
     std::vector<std::array<size_t, 4>> centers;
     auto rows = peak_rows.to_vector<size_t>();
-    auto cols = peak_rows.to_vector<size_t>();
-    auto segs = peak_rows.to_vector<size_t>();
+    auto cols = peak_cols.to_vector<size_t>();
+    auto segs = peak_segs.to_vector<size_t>();
     size_t regions = std::min(rows.size(), std::min(cols.size(), segs.size()));
 
     centers.resize(regions * events);
-    for (size_t i = 0; i < centers.size(); ++i) {
+    for (size_t i = 0; i < regions; ++i) {
       for (size_t j = 0; j < events; ++j) {
-        centers[i][0] = rows[i];
-        centers[i][1] = cols[i];
-        centers[i][2] = segs[i];
-        centers[i][3] = j;
+        centers[i*events+j][0] = rows[i];
+        centers[i*events+j][1] = cols[i];
+        centers[i*events+j][2] = segs[i];
+        centers[i*events+j][3] = j;
       }
     }
     return centers;
@@ -282,7 +285,7 @@ public:
     auto roi_size_v = this->roi_size.to_vector<size_t>();
     indexer<4> roi_size{roi_size_v.begin(), roi_size_v.end()};
     indexer<5> roi = to_roimem(roi_size, events);
-    std::vector<size_t> v;
+    std::vector<size_t> v(5);
     for (int i = 0; i < 5; ++i) {
       v[i] = roi[i];
     }

@@ -8,9 +8,8 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "No build type was set. Setting build type to ${default_build_type}.")
   set(CMAKE_BUILD_TYPE ${default_build_type} CACHE 
     STRING "Choose the type to build" FORCE)
-  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
-    "MinSizeRel" "RelWithDebInfo")
 endif()
+set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 
 
 include(CTest)
@@ -22,6 +21,28 @@ option(BUILD_SHARED_LIBS "build libpressio as a shared library" ON)
 include(GNUInstallDirs)
 include(CheckCXXCompilerFlag)
 include(CMakeDependentOption)
+
+
+if(NOT USE_SANITIZER)
+  set(USE_SANITIZER "" CACHE STRING "use a build sanitizer" FORCE)
+endif()
+set_property(CACHE USE_SANITIZER PROPERTY STRINGS "" "Address" "Thread" "Undefined" "Leak" "Memory")
+if (USE_SANITIZER STREQUAL "Address")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+elseif (USE_SANITIZER STREQUAL "Thread")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=thread")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread")
+elseif (USE_SANITIZER STREQUAL "Undefined")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=undefined")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined")
+elseif (USE_SANITIZER STREQUAL "Leak")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=leak")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak")
+elseif (USE_SANITIZER STREQUAL "Memory")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=memory")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=memory")
+endif()
 
 check_cxx_compiler_flag("-fno-omit-frame-pointer" HAVE_NO_OMIT_FRAME_POINTER)
 set(NO_OMIT_FRAME_POINTER_FLAG "")
@@ -303,7 +324,7 @@ if(LIBPRESSIO_HAS_SZ3)
   find_package(SZ3 REQUIRED)
   target_sources(libpressio
     PRIVATE
-      ${CMAKE_CURRENT_SOURCE_DIR}/src/plugins/compressors/sz_interp.cc
+      ${CMAKE_CURRENT_SOURCE_DIR}/src/plugins/compressors/sz3.cc
   )
 target_link_libraries(libpressio PRIVATE SZ3::SZ3)
 endif()
